@@ -1,68 +1,117 @@
 package com.github.prxy_rgb.city_break_manager.Controller;
 
-import com.github.prxy_rgb.city_break_manager.Service.AppService;
 import com.github.prxy_rgb.city_break_manager.Entity.City;
 import com.github.prxy_rgb.city_break_manager.Entity.Trip;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
+import com.github.prxy_rgb.city_break_manager.Service.AppService;
+
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/")
+@RequestMapping("/api/v1")
 public class AppController {
-    @Autowired
-    private AppService service;
 
-    @GetMapping("cities")
-    public List<City> getAllCities() {
-        return service.getAllCities();
+    private final AppService service;
+
+    // Constructor Injection
+    public AppController(AppService service) {
+        this.service = service;
     }
 
-    @GetMapping("cities/{id}")
-    public City getCityById(@PathVariable Long id) {
-        return service.getCityById(id);
+    // =========================
+    // CITY APIs
+    // =========================
+
+    @GetMapping("/cities")
+    public ResponseEntity<List<City>> getAllCities() {
+        return ResponseEntity.ok(service.getAllCities());
     }
 
-    @PostMapping("cities")
-    public ResponseEntity<City> createCity(@RequestBody City city) {
-        return ResponseEntity.ok(service.createCity(city));
+    @GetMapping("/cities/{id}")
+    public ResponseEntity<City> getCityById(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(service.getCityById(id));
     }
 
-    @PutMapping("cities/{id}")
-    public ResponseEntity<City> updateCity(@PathVariable Long id, @RequestBody City city) {
-        return ResponseEntity.ok(service.updateCity(id, city));
+    @PostMapping("/cities")
+    public ResponseEntity<City> createCity(
+            @Valid @RequestBody City city
+    ) {
+        City createdCity = service.createCity(city);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdCity);
     }
 
-    @DeleteMapping("cities/{id}")
-    public void deleteCity(@PathVariable Long id) {
+    @PutMapping("/cities/{id}")
+    public ResponseEntity<City> updateCity(
+            @PathVariable Long id,
+            @Valid @RequestBody City city
+    ) {
+        City updatedCity = service.updateCity(id, city);
+
+        return ResponseEntity.ok(updatedCity);
+    }
+
+    @DeleteMapping("/cities/{id}")
+    public ResponseEntity<Void> deleteCity(
+            @PathVariable Long id
+    ) {
         service.deleteCity(id);
+
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("trips")
-    public List<Trip> getAllTrips() {
-        return service.getAllTrips();
+
+    // =========================
+    // TRIP APIs
+    // =========================
+
+    @GetMapping("/trips")
+    public ResponseEntity<List<Trip>> getAllTrips() {
+        return ResponseEntity.ok(service.getAllTrips());
     }
 
-    @GetMapping("trips/{id}")
-    public Trip getTripById(@PathVariable Long id) {
-        return service.getTripById(id);
+    @GetMapping("/trips/{id}")
+    public ResponseEntity<Trip> getTripById(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(service.getTripById(id));
     }
 
-    @PostMapping("trips")
-    public ResponseEntity<Trip> createTrip(@RequestBody Trip trip) {
-        return ResponseEntity.ok(service.createTrip(trip));
+    @PostMapping("/trips")
+    public ResponseEntity<Trip> createTrip(
+            @Valid @RequestBody Trip trip
+    ) {
+        Trip createdTrip = service.createTrip(trip);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdTrip);
     }
 
-    @PutMapping("trips/{id}")
-    public ResponseEntity<Trip> updateTrip(@PathVariable Long id, @RequestBody Trip trip) {
-        return ResponseEntity.ok(service.updateTrip(id, trip));
+    @PutMapping("/trips/{id}")
+    public ResponseEntity<Trip> updateTrip(
+            @PathVariable Long id,
+            @Valid @RequestBody Trip trip
+    ) {
+        Trip updatedTrip = service.updateTrip(id, trip);
+
+        return ResponseEntity.ok(updatedTrip);
     }
 
-    @DeleteMapping("trips/{id}")
-    public void deleteTrip(@PathVariable Long id) {
+    @DeleteMapping("/trips/{id}")
+    public ResponseEntity<Void> deleteTrip(
+            @PathVariable Long id
+    ) {
         service.deleteTrip(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
